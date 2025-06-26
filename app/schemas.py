@@ -11,10 +11,24 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6, example="secret123")
 
-class UserResponse(BaseModel):
+class UserResponse(UserBase):
     id: int
     class Config:
         from_attributes = True  # Allows conversion from SQLAlchemy to Pydantic
+
+# ---- Comment Schemas ----
+class CommentBase(BaseModel):
+    commenter_name: str
+    body: str
+
+class CommentCreate(CommentBase):
+    pass
+
+class CommentResponse(CommentBase):
+    id: int
+    post_id: int
+    class Config:
+        from_attributes = True
 
 # ---- Post Schemas ----
 class PostBase(BaseModel):
@@ -24,11 +38,12 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
 
-class PostResponse(PostCreate):
+class PostResponse(PostBase):
     id: int
     created_at: datetime
     owner_id: int
     owner: UserResponse  # Nested user data for future usage
+    comments: list[CommentResponse] = []
     class Config:
         from_attributes = True  # Allows conversion from SQLAlchemy to Pydantic
 

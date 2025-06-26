@@ -26,3 +26,17 @@ class Post(Base):
 
     # Relationship to user
     owner = relationship("User", back_populates="posts")
+
+    # Relationship to comments
+    comments = relationship("Comment", back_populates="post")
+
+# Define a Comment table
+class Comment(Base):
+    __tablename__ = "comments"
+    id = Column(Integer, primary_key=True, index=True)
+    body = Column(String)
+    commenter_name = Column(String)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+
+    # Relationship to post
+    post = relationship("Post", back_populates="comments")

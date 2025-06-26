@@ -27,7 +27,7 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
             )
     return post
 
-# CREATE a post (bugged)
+# CREATE a post
 @router.post("/", response_model=schemas.PostResponse, status_code=status.HTTP_201_CREATED)
 def create_post(
     post: schemas.PostCreate,  # Pydantic model for request body
