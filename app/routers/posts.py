@@ -45,29 +45,6 @@ def create_post(
     db.refresh(new_post)  # Update object with database defaults
     return new_post
 
-# DELETE a specific post
-@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(
-    post_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # Requires valid JWT
-    ):
-
-    post = find_post(post_id, db)
-    if not post:  # Existence check
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post (id {post_id}) not found!"
-        )
-    if post.author_id != current_user.id:  # Author check
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="You are unauthorized to do this."
-        )
-    db.delete(post)  # Stage object for deletion
-    db.commit()  # Save to database
-    return None  # Return
-
 # UPDATE a specific post
 @router.patch("/{post_id}", response_model=schemas.PostResponse)
 def update_post(
@@ -101,3 +78,26 @@ def update_post(
     db.commit()  # Save to database
     db.refresh(updated_post)
     return updated_post
+
+# DELETE a specific post
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)  # Requires valid JWT
+    ):
+
+    post = find_post(post_id, db)
+    if not post:  # Existence check
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Post (id {post_id}) not found!"
+        )
+    if post.author_id != current_user.id:  # Author check
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="You are unauthorized to do this."
+        )
+    db.delete(post)  # Stage object for deletion
+    db.commit()  # Save to database
+    return None  # Return
