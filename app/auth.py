@@ -2,7 +2,7 @@
 from app import models  # Models
 import bcrypt  # For hashing passwords
 from datetime import datetime, timedelta, timezone  # For access token expiration
-from fastapi import Depends, HTTPException, status  # FastAPI's dependency injection system
+from fastapi import Depends, HTTPException, status  # FastAPI-related toolkit
 from fastapi.security import OAuth2PasswordBearer  # For auth dependency
 from jose import jwt, JWTError  # For access tokens
 from sqlalchemy.orm import Session  # Database session type hint
