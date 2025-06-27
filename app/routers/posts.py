@@ -12,7 +12,7 @@ def find_post(post_id: int, db: Session = Depends(get_db)):
     return db.query(models.Post).filter(models.Post.id == post_id).first()  # Retrieve post
 
 # GET all posts
-@router.get("/", response_model=list[schemas.PostResponse])
+@router.get("", response_model=list[schemas.PostResponse])
 def read_posts(db:Session = Depends(get_db)):
     return db.query(models.Post).all()  # Retrieve all posts
 
@@ -28,7 +28,7 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
     return post
 
 # CREATE a post
-@router.post("/", response_model=schemas.PostResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.PostResponse, status_code=status.HTTP_201_CREATED)
 def create_post(
     post: schemas.PostCreate,  # Pydantic model for request body
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ def create_post(
     new_post = models.Post(
         title=post.title,
         content=post.content,
-        owner_id=current_user.id
+        author_id=current_user.id
     )
     db.add(new_post)  # Stage object for insertion
     db.commit()  # Save to database
@@ -59,7 +59,7 @@ def delete_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post (id {post_id}) not found!"
         )
-    if post.owner_id != current_user.id:  # Owner check
+    if post.author_id != current_user.id:  # Author check
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="You are unauthorized to do this."
@@ -77,19 +77,22 @@ def update_post(
     current_user: models.User = Depends(get_current_user)  # Requires valid JWT
     ):
 
+    # Find the post
     updated_post = find_post(post_id, db)
     if not updated_post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post (id {post_id}) not found!"
         )
-    if updated_post.owner_id != current_user.id:
+    
+    # Verify ownership
+    if updated_post.author_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are unauthorized to do this."
         )
     
-    # Update fields if possible
+    # Update fields if provided
     if post_update.title is not None:
         updated_post.title = post_update.title
     if post_update.content is not None:
