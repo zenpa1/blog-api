@@ -26,7 +26,7 @@ def create_comment(
     comment: schemas.CommentCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
-):
+    ):
     
     # Check if post exists
     db_post = find_post(post_id, db)
@@ -54,7 +54,7 @@ def update_comment(
     comment_update: schemas.CommentUpdate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
-):
+    ):
     
     # Check if comment exists
     db_comment = find_comment(comment_id, db)
@@ -68,13 +68,40 @@ def update_comment(
     if db_comment.commenter_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are unauthorized to do this."
+            detail="You are unauthenticated."
         )
     
     # Update fields if provided
     if comment_update.body is not None:
         db_comment.body = comment_update.body
 
-    db.commit()
+    db.commit()  # Save to database
     db.refresh(db_comment)
     return db_comment
+
+# DELETE a comment
+@router.delete("/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_comment(
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    
+    # Check if comment exists
+    db_comment = find_comment(comment_id, db)
+    if not db_comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Comment with id {comment_id} not found!"
+        )
+    
+    # Verify ownership
+    if db_comment.commenter_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are unauthenticated."
+        )
+    
+    db.delete(db_comment)  # Stage object for deletion
+    db.commit()  # Save to database
+    return None  # Return
