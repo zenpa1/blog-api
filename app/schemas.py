@@ -66,3 +66,9 @@ class PostUpdate(BaseModel):
         if not any(values.values()):
             raise ValueError("At least one field must be changed!")
         return values
+    
+# --- Token Schemas ---
+class TokenResponse(BaseModel):
+    api_key: str
+    expires_in: str
+    success: bool
