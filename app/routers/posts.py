@@ -88,7 +88,7 @@ def update_post(
     if not updated_post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post (id {post_id}) not found!"
+            detail=f"Post with id {post_id} not found!"
         )
     
     # Verify ownership
@@ -109,7 +109,7 @@ def update_post(
     return updated_post
 
 # DELETE a specific post
-@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{post_id}", status_code=status.HTTP_200_OK)
 def delete_post(
     post_id: int,
     db: Session = Depends(get_db),
@@ -119,20 +119,15 @@ def delete_post(
     # Find the post
     post = find_post(post_id, db)
     if not post:  # Existence check
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post (id {post_id}) not found!"
-        )
+        return {"success": False, "message": f"Post with id {post_id} not found!"}
     
     # Verify ownership
     if post.author_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="You are either unauthenticated or you are not using the account that created the post."
-        )
+        return {"success": False, "message": "You are either unauthenticated or you are not using the account that created the post."}
+
     db.delete(post)  # Stage object for deletion
     db.commit()  # Save to database
-    return None
+    return {"success": True}
 
 # [Testing] To test pagination
 @router.post("/generate-test-posts")

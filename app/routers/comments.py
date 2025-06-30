@@ -91,18 +91,12 @@ def delete_comment(
     # Check if comment exists
     db_comment = find_comment(comment_id, db)
     if not db_comment:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Comment with id {comment_id} not found!"
-        )
+        return {"success": False, "message": f"Comment with id {comment_id} not found!"}
     
     # Verify ownership
     if db_comment.commenter_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are either unauthenticated or you are not using the account that created the comment."
-        )
+        return {"success": False, "message": "You are either unauthenticated or you are not using the account that created the comment."}
     
     db.delete(db_comment)  # Stage object for deletion
     db.commit()  # Save to database
-    return None  # Return
+    return {"success": True}

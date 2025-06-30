@@ -78,3 +78,8 @@ class PostQueryParams(BaseModel):
     page: Optional[int] = 1
     take: Optional[int] = 25
     search: Optional[str] = None
+
+# --- General Schemas ---
+class DeleteResponse(BaseModel):
+    success: bool
+    message: Optional[str] = None
