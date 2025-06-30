@@ -40,3 +40,16 @@ uvicorn app.main:app --reload
 6) Open a Git Bash terminal for cURL
 
 7) Open cURL.txt and insert the commands into a Bash terminal (easiest on Visual Studio Code)
+
+## Tech Stack
+
+### Core
+- **Language**: Python 3.10+
+- **Web Framework**: [FastAPI](https://fastapi.tiangolo.com/) 
+- **Database ORM**: [SQLAlchemy 2.0](https://www.sqlalchemy.org/)
+- **Authentication**: BCrypt + JWT (via python-jose)
+
+### Key Dependencies
+- Password Hashing: `bcrypt`
+- Data Validation: `pydantic`
+- ASGI Server: `uvicorn`
