@@ -1,14 +1,14 @@
 # blog-api
 A simple backend API of a blog-style application.
 
-# Features
+## Features
 - Basic login functionality (token-based authentication)
 - Post viewing, creation, modification, and deletion
     - Pagination and filtering
 - Comment viewing, creation, modification, and deletion
 - CORS protection
 
-# Instructions
+## Instructions
 1) Clone the repository or use the project folder
 ```
 git clone https://github.com/zenpa1/blog-api
