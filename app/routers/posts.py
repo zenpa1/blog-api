@@ -10,7 +10,7 @@ from ..database import get_db  # For database sessions
 # [Testing] To create fake data
 from faker import Faker
 
-router = APIRouter(prefix="/posts", tags=["posts"])  # Add /posts prefix to all routes
+router = APIRouter(prefix="/posts", tags=["posts"])
 
 # Finds a post by post_id
 def find_post(post_id: int, db: Session = Depends(get_db)):
