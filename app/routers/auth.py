@@ -1,7 +1,8 @@
+# -- Authentication Router --
 from app import models  # Models
-from fastapi import APIRouter, Depends, HTTPException  # FastAPI-related toolkit
+from fastapi import APIRouter, Depends, HTTPException, status  # FastAPI-related toolkit
 from sqlalchemy.orm import Session  # Database session type hint
-from ..auth import verify_password, create_access_token  # For passwords and tokens
+from ..auth import verify_password, create_api_key  # For passwords and tokens
 from ..database import get_db  # For database sessions
 
 router = APIRouter(tags=["authentication"])
@@ -12,13 +13,23 @@ def find_user(username: str, db: Session = Depends(get_db)):
 
 # LOGIN a user
 @router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    user = find_user(username, db)
-
-    # Verify user exists AND password is correct
-    if not user or not verify_password(password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials!")
+def login(
+    username: str,
+    password: str,
+    db: Session = Depends(get_db)
+    ):
     
-    # Generate JWT token
-    token = create_access_token(data={"sub": user.username})
-    return {"access_token": token, "token_type": "bearer"} 
+    user = find_user(username, db)
+    if not user or not verify_password(password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"success": False, "message": "Invalid credentials!"}
+        )
+    
+    # Generate 64-character API key that expires in 5 minutes
+    api_key = create_api_key(user.id)
+    return {
+        "api_key": api_key,
+        "expires_in": "5 minutes",
+        "success": True
+    }
