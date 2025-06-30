@@ -15,6 +15,9 @@ class User(Base):
     # Relationship to posts
     posts = relationship("Post", back_populates="author")
 
+    # Relationship to comments
+    comments = relationship("Comment", back_populates="commenter")
+
 # Define a Post table
 class Post(Base):
     __tablename__ = "posts"
@@ -42,4 +45,4 @@ class Comment(Base):
     post = relationship("Post", back_populates="comments")
 
     # Relationship to user
-    commenter = relationship("User")
+    commenter = relationship("User", back_populates="comments")
