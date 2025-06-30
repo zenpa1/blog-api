@@ -1,3 +1,4 @@
+# -- User Router --
 from app import models, schemas  # Models and schemas
 from fastapi import APIRouter, Depends  # FastAPI-related toolkit
 from sqlalchemy.orm import Session  # Database session type hint

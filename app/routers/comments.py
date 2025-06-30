@@ -1,3 +1,4 @@
+# -- Comment Router --
 from app import models, schemas  # Models and schemas
 from fastapi import APIRouter, Depends, HTTPException, status  # FastAPI-related toolkit
 from sqlalchemy.orm import Session  # Database session type hint
@@ -25,7 +26,7 @@ def create_comment(
     post_id: int,
     comment: schemas.CommentCreate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user)  # Requires valid 64-char API token
     ):
     
     # Check if post exists
@@ -42,9 +43,9 @@ def create_comment(
         commenter_id=current_user.id
     )
 
-    db.add(new_comment)
-    db.commit()
-    db.refresh(new_comment)
+    db.add(new_comment)  # Stage object for insertion
+    db.commit()  # Save to database
+    db.refresh(new_comment)  # Update object with database defaults
     return new_comment
 
 # UPDATE a comment
@@ -68,7 +69,7 @@ def update_comment(
     if db_comment.commenter_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are unauthenticated."
+            detail="You are either unauthenticated or you are not using the account that created the comment."
         )
     
     # Update fields if provided
@@ -99,7 +100,7 @@ def delete_comment(
     if db_comment.commenter_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are unauthenticated."
+            detail="You are either unauthenticated or you are not using the account that created the comment."
         )
     
     db.delete(db_comment)  # Stage object for deletion

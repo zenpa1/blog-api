@@ -20,6 +20,7 @@ def read_posts(db:Session = Depends(get_db)):
 @router.get("/{post_id}", response_model=schemas.PostResponse)
 def read_post(post_id: int, db: Session = Depends(get_db)):
     post = find_post(post_id, db)
+    # If post does not exist
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -32,9 +33,10 @@ def read_post(post_id: int, db: Session = Depends(get_db)):
 def create_post(
     post: schemas.PostCreate,  # Pydantic model for request body
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user)  # Requires valid 64-char API token
     ):
 
+    # Create new post
     new_post = models.Post(
         title=post.title,
         content=post.content,
@@ -51,7 +53,7 @@ def update_post(
     post_id: int,
     post_update: schemas.PostUpdate,  # Pydantic model for request body
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # Requires valid JWT
+    current_user: models.User = Depends(get_current_user)  # Requires valid 64-char API token
     ):
 
     # Find the post
@@ -66,7 +68,7 @@ def update_post(
     if updated_post.author_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are unauthorized to do this."
+            detail="You are either unauthenticated or you are not using the account that created the post."
         )
     
     # Update fields if provided
@@ -84,20 +86,23 @@ def update_post(
 def delete_post(
     post_id: int,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)  # Requires valid JWT
+    current_user: models.User = Depends(get_current_user)  # Requires valid 64-char API token
     ):
 
+    # Find the post
     post = find_post(post_id, db)
     if not post:  # Existence check
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post (id {post_id}) not found!"
         )
-    if post.author_id != current_user.id:  # Author check
+    
+    # Verify ownership
+    if post.author_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="You are unauthorized to do this."
+            detail="You are either unauthenticated or you are not using the account that created the post."
         )
     db.delete(post)  # Stage object for deletion
     db.commit()  # Save to database
-    return None  # Return
+    return None
