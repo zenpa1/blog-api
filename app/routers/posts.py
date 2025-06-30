@@ -1,9 +1,14 @@
 # -- Post Router --
-from fastapi import APIRouter, Depends, HTTPException, status  # FastAPI-related toolkit
+from fastapi import APIRouter, Depends, HTTPException, status, Query  # FastAPI-related toolkit
+from sqlalchemy import or_  # For OR conditions in filtering
 from sqlalchemy.orm import Session  # Database session type hint
 from app import models, schemas  # Models and schemas
+from typing import Optional  # For optional search query
 from ..auth import get_current_user  # For authentication
 from ..database import get_db  # For database sessions
+
+# [Testing] To create fake data
+from faker import Faker
 
 router = APIRouter(prefix="/posts", tags=["posts"])  # Add /posts prefix to all routes
 
@@ -13,8 +18,30 @@ def find_post(post_id: int, db: Session = Depends(get_db)):
 
 # GET all posts
 @router.get("", response_model=list[schemas.PostResponse])
-def read_posts(db:Session = Depends(get_db)):
-    return db.query(models.Post).all()  # Retrieve all posts
+def read_posts(
+    db:Session = Depends(get_db),
+    page: int = Query(1, gt=0),  # Default page is 1, must be > than 0
+    take: int = Query(25, gt=0),  # Default items shown is 25, must be > than 0
+    search: Optional[str] = Query(None)  # Optional for searching
+    ):
+    
+    # Start with base query
+    query = db.query(models.Post)
+
+    # Apply filtering
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            # Two possible conditions
+            or_(
+                models.Post.title.ilike(search_term),
+                models.Post.content.ilike(search_term)
+            )
+        )
+
+    # Apply pagination (offset skips the first N records [page 1: skip 0, page 2: skip 25], limit takes only the specified number of records)
+    posts = query.order_by(models.Post.created_at.desc()).offset((page - 1) * take).limit(take).all()
+    return posts
 
 # GET a specific post
 @router.get("/{post_id}", response_model=schemas.PostResponse)
@@ -106,3 +133,25 @@ def delete_post(
     db.delete(post)  # Stage object for deletion
     db.commit()  # Save to database
     return None
+
+# [Testing] To test pagination
+@router.post("/generate-test-posts")
+def generate_test_posts(
+    count: int = 100,  # Number of posts to generate
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    fake = Faker()
+    posts = []
+    
+    for _ in range(count):
+        post = models.Post(
+            title=fake.sentence(nb_words=6),
+            content=fake.text(max_nb_chars=200),
+            author_id=current_user.id
+        )
+        posts.append(post)
+    
+    db.add_all(posts)
+    db.commit()
+    return {"message": f"Generated {count} test posts"}

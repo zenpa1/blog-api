@@ -72,3 +72,9 @@ class TokenResponse(BaseModel):
     api_key: str
     expires_in: str
     success: bool
+
+# --- Query Parameter Schemas ---
+class PostQueryParams(BaseModel):
+    page: Optional[int] = 1
+    take: Optional[int] = 25
+    search: Optional[str] = None
