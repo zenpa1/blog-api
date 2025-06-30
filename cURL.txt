@@ -1,0 +1,58 @@
+# Copy-paste these commands into a Git Bash terminal to test various functions (change the id values and API token if necessary)
+
+# GET POSTS /posts
+curl http://localhost:8000/posts
+
+# CREATE USER /users
+curl -X POST "http://localhost:8000/users" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"tomasinoweb", "email":"tomasinoweb@email.com", "password":"tmsnw3btech"}'
+  
+# LOGIN USER /login
+curl -X POST "http://localhost:8000/login?username=tomasinoweb&password=tmsnw3btech"
+
+# CREATE (A LOT OF) POSTS /posts/generate-test-posts
+curl -X POST http://localhost:8000/posts/generate-test-posts \
+  -H "X-API-Token: No2npat3oBNnLxEQjxpRKJHL0SxDQKgZwF30XkPujM5TYIxsp08DF3BdroZKmXm4" \
+  -H "Content-Type: application/json" \
+  -d '{"count":50}'
+
+# CREATE POST /posts
+curl -X POST "http://localhost:8000/posts" \
+  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"lf tank darkhour", "content":"preferably experienced"}'
+
+# UPDATE POST /posts/{post_id}
+curl -X PATCH http://localhost:8000/posts/1 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT" \
+  -d '{"title":"lf tank rushmore"}'
+  
+curl -X PATCH http://localhost:8000/posts/1 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
+  -d '{"content":"preferably new"}'
+  
+# DELETE POST /posts/{post_id}
+curl -X DELETE http://localhost:8000/posts/1 \
+  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT"
+  
+# CREATE COMMENT /posts/{post_id}/comments
+curl -X POST "http://localhost:8000/posts/2/comments" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
+  -d '{"body":"add me"}'
+
+# GET COMMENTS /posts/{post_id}/comments
+curl "http://localhost:8000/posts/1/comments"
+
+# UPDATE COMMENT /posts/{post_id}/comments/{comment_id}
+curl -X PATCH http://localhost:8000/posts/2/comments/1 \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
+  -d '{"body":"lf tank darkest hour"}'
+
+# DELETE COMMENT /posts/{post_id}/comments/{comment_id}
+curl -X DELETE "http://localhost:8000/posts/2/comments/1" \
+  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ"
