@@ -1,4 +1,4 @@
-# -- SQLite Database Connector --
+# -- SQLAlchemy Database Connector --
 from pathlib import Path  # For custom paths
 from sqlalchemy import create_engine  # For initializing engine
 from sqlalchemy.ext.declarative import declarative_base  # For models
