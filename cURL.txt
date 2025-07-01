@@ -1,4 +1,4 @@
-# Copy-paste these commands into a Git Bash terminal to test various functions (change the id values and API token if necessary)
+# Copy-paste these commands into a Git Bash terminal to test various functions (change the id values, port, and API token if necessary)
 
 # GET POSTS /posts
 curl http://localhost:8000/posts
@@ -13,36 +13,36 @@ curl -X POST "http://localhost:8000/login?username=tomasinoweb&password=tmsnw3bt
 
 # CREATE (A LOT OF) POSTS /posts/generate-test-posts
 curl -X POST http://localhost:8000/posts/generate-test-posts \
-  -H "X-API-Token: No2npat3oBNnLxEQjxpRKJHL0SxDQKgZwF30XkPujM5TYIxsp08DF3BdroZKmXm4" \
+  -H "X-API-Token: <your_token_here>" \
   -H "Content-Type: application/json" \
   -d '{"count":50}'
 
 # CREATE POST /posts
 curl -X POST "http://localhost:8000/posts" \
-  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT" \
+  -H "X-API-Token: <your_token_here>" \
   -H "Content-Type: application/json" \
-  -d '{"title":"lf tank darkhour", "content":"preferably experienced"}'
+  -d '{"title":"Sample Blog", "content":"Hello! I like blogging."}'
 
 # UPDATE POST /posts/{post_id}
 curl -X PATCH http://localhost:8000/posts/1 \
   -H "Content-Type: application/json" \
-  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT" \
-  -d '{"title":"lf tank rushmore"}'
+  -H "X-API-Token: <your_token_here>" \
+  -d '{"title":"Not a sample blog"}'
   
 curl -X PATCH http://localhost:8000/posts/1 \
   -H "Content-Type: application/json" \
-  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
-  -d '{"content":"preferably new"}'
+  -H "X-API-Token: <your_token_here>" \
+  -d '{"content":"I still like blogging."}'
   
 # DELETE POST /posts/{post_id}
-curl -X DELETE http://localhost:8000/posts/1 \
-  -H "X-API-Token: Gaf4NzlDeSC6LnBVdxPa1MdBJDO1xJHcvVOPqwYHj8iPazYUMePlFba7iojURcWT"
+curl -X DELETE http://localhost:8000/posts/99 \
+  -H "X-API-Token: <your_token_here>"
   
 # CREATE COMMENT /posts/{post_id}/comments
 curl -X POST "http://localhost:8000/posts/2/comments" \
   -H "Content-Type: application/json" \
-  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
-  -d '{"body":"add me"}'
+  -H "X-API-Token: <your_token_here>" \
+  -d '{"body":"I like your blog!"}'
 
 # GET COMMENTS /posts/{post_id}/comments
 curl "http://localhost:8000/posts/1/comments"
@@ -50,9 +50,9 @@ curl "http://localhost:8000/posts/1/comments"
 # UPDATE COMMENT /posts/{post_id}/comments/{comment_id}
 curl -X PATCH http://localhost:8000/posts/2/comments/1 \
   -H "Content-Type: application/json" \
-  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ" \
-  -d '{"body":"lf tank darkest hour"}'
+  -H "X-API-Token: <your_token_here>" \
+  -d '{"body":"I still like your blog!"}'
 
 # DELETE COMMENT /posts/{post_id}/comments/{comment_id}
 curl -X DELETE "http://localhost:8000/posts/2/comments/1" \
-  -H "X-API-Token: 0dgEerejRgLDnbOeaEdxVjBeCrjuR2AGqjzEfQqLz5HtbXMKlUMmgXo20u2F47YZ"
+  -H "X-API-Token: <your_token_here>"
